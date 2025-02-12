@@ -1,0 +1,16 @@
+{
+    "institutes": {
+        "xyz school": {
+            "buses": {
+                "Bus 1": "001",
+                "Bus 2": "002"
+            }
+        },
+        "abc school": {
+            "buses": {
+                "Bus 3": "001",
+                "Bus 4": "002"
+            }
+        }
+    }
+}

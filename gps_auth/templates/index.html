@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">Welcome to SEEK</h1>
+        <p class="lead mb-4">
+            Track your bus in real-time with SEEK, the ultimate bus location finder application.
+        </p>
+        {% if current_user.is_authenticated %}
+            <div class="d-grid gap-3">
+                <a href="{{ url_for('gps.monitor') }}" class="btn btn-primary btn-lg">
+                    Go to Bus Tracker
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger btn-lg">
+                    Logout
+                </a>
+            </div>
+        {% else %}
+            <div class="d-grid gap-3">
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                    Login
+                </a>
+                <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">
+                    Register
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
