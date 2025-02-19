@@ -2,13 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SEEK - Bus Location Monitor</title>
   <!-- Bootstrap & Font Awesome -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    rel="stylesheet"
+  />
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"
+  />
+  <!-- Leaflet Routing Machine CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
+  />
+
   <style>
     /* Ensure full-height layout */
     html, body {
@@ -22,6 +37,7 @@
       display: flex;
       flex-direction: column;
     }
+
     /* Navbar (SEEK header) */
     .navbar {
       background: linear-gradient(45deg, #4c6ef5, #007bff);
@@ -40,6 +56,7 @@
     .navbar-nav .nav-link:hover {
       color: #ffc107 !important;
     }
+
     /* Desktop header (visible only on screens wider than 576px) */
     .header-desktop {
       background: #fff;
@@ -66,18 +83,23 @@
     .controls select {
       min-width: 140px;
     }
+    .controls button {
+      min-width: 100px;
+    }
     .latest-data {
       font-size: 0.9rem;
       color: #333;
       text-align: right;
       white-space: nowrap;
     }
+
     /* Hide desktop header on mobile */
     @media (max-width: 576px) {
       .header-desktop {
         display: none;
       }
     }
+
     /* Mobile controls (inside the navbar collapse) – visible only on small screens */
     .mobile-controls {
       display: none;
@@ -87,6 +109,7 @@
         display: block;
       }
     }
+
     /* Map container takes the remaining space */
     .map-container {
       flex-grow: 1;
@@ -96,6 +119,7 @@
       width: 100%;
       height: 100%;
     }
+
     /* Status message colors */
     .status.success {
       color: #28a745;
@@ -110,14 +134,21 @@
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
       <a class="navbar-brand" href="#">SEEK</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <!-- Logout option -->
           <li class="nav-item">
-            <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <a class="nav-link" href="/logout"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
           </li>
         </ul>
         <!-- Mobile controls: visible only on mobile -->
@@ -125,7 +156,9 @@
           <div class="d-flex flex-column">
             <div class="mb-2">
               <div class="d-flex align-items-center">
-                <label for="institute-mobile" class="me-1"><i class="fas fa-school"></i> Institute</label>
+                <label for="institute-mobile" class="me-1"
+                  ><i class="fas fa-school"></i> Institute</label
+                >
                 <select id="institute-mobile" class="form-select">
                   <option value="">Select Institute</option>
                 </select>
@@ -133,15 +166,19 @@
             </div>
             <div class="mb-2">
               <div class="d-flex align-items-center">
-                <label for="bus-mobile" class="me-1"><i class="fas fa-bus"></i> Bus</label>
+                <label for="bus-mobile" class="me-1"
+                  ><i class="fas fa-bus"></i> Bus</label
+                >
                 <select id="bus-mobile" class="form-select">
                   <option value="">Select Bus</option>
                 </select>
               </div>
             </div>
             <div class="mb-2">
-              <button class="btn btn-primary" onclick="startMonitoring()">Start</button>
-              <button class="btn btn-danger" onclick="stopMonitoring()" id="stopButtonMobile" disabled>Stop</button>
+              <!-- Single Search button -->
+              <button class="btn btn-primary" onclick="searchLocations()">
+                Search
+              </button>
             </div>
             <div class="latest-data">
               <strong>Latest Data:</strong>
@@ -149,6 +186,8 @@
               <div>
                 <span id="statusMobile" class="status"></span>
               </div>
+              <!-- Road-route distance/time display (mobile) -->
+              <div id="distanceDisplayMobile"><strong>Distance:</strong> N/A</div>
             </div>
           </div>
         </div>
@@ -161,21 +200,25 @@
     <div class="container">
       <div class="controls">
         <div class="d-flex align-items-center">
-          <label for="institute" class="me-1"><i class="fas fa-school"></i> Institute</label>
+          <label for="institute" class="me-1"
+            ><i class="fas fa-school"></i> Institute</label
+          >
           <select id="institute" class="form-select">
             <option value="">Select Institute</option>
           </select>
         </div>
         <div class="d-flex align-items-center">
-          <label for="bus" class="me-1"><i class="fas fa-bus"></i> Bus</label>
+          <label for="bus" class="me-1"
+            ><i class="fas fa-bus"></i> Bus</label
+          >
           <select id="bus" class="form-select">
             <option value="">Select Bus</option>
           </select>
         </div>
-        <div>
-          <button class="btn btn-primary" onclick="startMonitoring()">Start</button>
-          <button class="btn btn-danger" onclick="stopMonitoring()" id="stopButton" disabled>Stop</button>
-        </div>
+        <!-- Single Search button -->
+        <button class="btn btn-primary" onclick="searchLocations()">
+          Search
+        </button>
       </div>
       <div class="latest-data">
         <strong>Latest Data:</strong>
@@ -183,6 +226,8 @@
         <div>
           <span id="status" class="status"></span>
         </div>
+        <!-- Road-route distance/time display (desktop) -->
+        <div id="distanceDisplay"><strong>Distance:</strong> N/A</div>
       </div>
     </div>
   </div>
@@ -195,11 +240,14 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+
+  <!-- Leaflet Routing Machine + Dependencies -->
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
   <script>
     // ------------------------------
-    // Helper: synchronize desktop & mobile controls
+    // 1. Helper: synchronize desktop & mobile controls
     // ------------------------------
-    // Get references to both desktop and mobile elements
     const instituteDesktop = document.getElementById('institute');
     const instituteMobile = document.getElementById('institute-mobile');
     const busDesktop = document.getElementById('bus');
@@ -208,14 +256,13 @@
     const latestDataMobile = document.getElementById('latestDataMobile');
     const statusDesktop = document.getElementById('status');
     const statusMobile = document.getElementById('statusMobile');
-    const stopButtonDesktop = document.getElementById('stopButton');
-    const stopButtonMobile = document.getElementById('stopButtonMobile');
+    const distanceDisplayDesktop = document.getElementById('distanceDisplay');
+    const distanceDisplayMobile = document.getElementById('distanceDisplayMobile');
 
-    // Synchronize institute selection
     function syncInstitute(value) {
       instituteDesktop.value = value;
       instituteMobile.value = value;
-      loadBuses();  // refresh bus options for both
+      loadBuses(); // refresh bus options
     }
     instituteDesktop.addEventListener('change', function() {
       syncInstitute(this.value);
@@ -224,7 +271,6 @@
       syncInstitute(this.value);
     });
 
-    // Synchronize bus selection
     function syncBus(value) {
       busDesktop.value = value;
       busMobile.value = value;
@@ -237,18 +283,11 @@
       syncBus(this.value);
     });
 
-    // Synchronize stop button state
-    function syncStopButton(state) {
-      stopButtonDesktop.disabled = state;
-      stopButtonMobile.disabled = state;
-    }
-
-    // Synchronize latest data display
     function syncLatestData(html) {
       latestDataDesktop.innerHTML = html;
       latestDataMobile.innerHTML = html;
     }
-    // Synchronize status messages
+
     function syncStatus(message, isError = false) {
       statusDesktop.textContent = message;
       statusMobile.textContent = message;
@@ -256,16 +295,13 @@
       statusDesktop.className = className;
       statusMobile.className = className;
     }
+
     // ------------------------------
-    // Map & Monitoring Code
+    // 2. Configuration (institutes/buses) loading & selection
     // ------------------------------
-    let monitoringInterval;
-    let map;
-    let marker;
     let deviceId = '';
     let config = {};
 
-    // Load the configuration file (adjust the path if necessary)
     fetch('/static/config.json')
       .then(response => response.json())
       .then(data => {
@@ -274,7 +310,6 @@
       })
       .catch(error => console.error('Error loading config:', error));
 
-    // Populate institute selection options (for both desktop & mobile)
     function populateInstitutes() {
       const selectElements = [instituteDesktop, instituteMobile];
       Object.keys(config.institutes).forEach(institute => {
@@ -285,12 +320,10 @@
       });
     }
 
-    // When the institute selection changes, load available buses into both selects
     function loadBuses() {
-      // Clear both bus selects
       busDesktop.innerHTML = '<option value="">Select Bus</option>';
       busMobile.innerHTML = '<option value="">Select Bus</option>';
-      const selectedInstitute = instituteDesktop.value; // both are now synchronized
+      const selectedInstitute = instituteDesktop.value;
       if (selectedInstitute) {
         const buses = config.institutes[selectedInstitute].buses;
         Object.keys(buses).forEach(bus => {
@@ -303,7 +336,6 @@
       }
     }
 
-    // When a bus is selected, set the device id
     function selectBus() {
       const selectedInstitute = instituteDesktop.value;
       const selectedBus = busDesktop.value;
@@ -314,30 +346,146 @@
       }
     }
 
-    // Initialize the full-screen map using Leaflet
+    // ------------------------------
+    // 3. Map Setup
+    // ------------------------------
+    let map;
+    let busMarker;
+    let userMarker;
+    let routingControl = null;
+
+    let userWatchId = null;       // For user location
+    let busUpdateInterval = null; // For bus location
+    let autoFitEnabled = true;    // Control auto-resizing
+
+    // Custom bus icon
+    const busIcon = L.icon({
+      iconUrl: '/static/bus.png',  // Replace with your bus icon path if needed
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+      shadowSize: [41, 41],
+      shadowAnchor: [12, 41]
+    });
+
     function initMap() {
-      map = L.map('map').setView([0, 0], 2);
+      map = L.map('map').setView([20, 0], 2); // Broad view to start
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
       }).addTo(map);
+
+      // Disable auto-fit if user manually zooms/drags
+      map.on('zoomstart dragstart', function() {
+        autoFitEnabled = false;
+      });
     }
     initMap();
 
-    // Update or add the marker on the map
-    function updateMap(lat, lng) {
+    // ------------------------------
+    // 4. Route & Marker Updates (no blinking!)
+    // ------------------------------
+    function updateBusMarker(lat, lng) {
       const newLatLng = [lat, lng];
-      if (!marker) {
-        marker = L.marker(newLatLng).addTo(map);
-        map.setView(newLatLng, 13);
+      if (!busMarker) {
+        busMarker = L.marker(newLatLng, { icon: busIcon }).addTo(map);
       } else {
-        marker.setLatLng(newLatLng);
-        if (!map.getBounds().contains(newLatLng)) {
-          map.panTo(newLatLng);
-        }
+        busMarker.setLatLng(newLatLng);
+      }
+      updateMapView();
+      updateRoute();
+    }
+
+    function updateUserMarker(lat, lng) {
+      const userLatLng = [lat, lng];
+      if (!userMarker) {
+        userMarker = L.marker(userLatLng, {
+          icon: L.icon({
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+          })
+        }).addTo(map);
+      } else {
+        userMarker.setLatLng(userLatLng);
+      }
+      updateMapView();
+      updateRoute();
+    }
+
+    function updateMapView() {
+      if (autoFitEnabled && busMarker && userMarker) {
+        const bounds = L.latLngBounds([
+          busMarker.getLatLng(),
+          userMarker.getLatLng()
+        ]);
+        map.fitBounds(bounds, { padding: [50, 50] });
       }
     }
 
-    // Fetch device data from the server
+    // Format seconds as Hh Mm Ss or just Mm Ss if under 1 hour
+    function formatTravelTime(seconds) {
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = Math.floor(seconds % 60);
+
+      if (hrs > 0) {
+        return `${hrs}h ${mins}m ${secs}s`;
+      } else {
+        return `${mins}m ${secs}s`;
+      }
+    }
+
+    // Create or update the route without removing it (so no blinking)
+    function updateRoute() {
+      if (!busMarker || !userMarker) return;
+
+      const busLatLng = busMarker.getLatLng();
+      const userLatLng = userMarker.getLatLng();
+
+      // If routing control hasn't been created, create it now
+      if (!routingControl) {
+        routingControl = L.Routing.control({
+          waypoints: [
+            L.latLng(busLatLng.lat, busLatLng.lng),
+            L.latLng(userLatLng.lat, userLatLng.lng)
+          ],
+          // Hide unwanted details
+          showAlternatives: false,
+          fitSelectedRoute: false,
+          lineOptions: {
+            styles: [{ color: 'blue', opacity: 0.7, weight: 2 }] // thin line
+          },
+          routeWhileDragging: false,
+          createMarker: () => null,  // Hide the default start/end markers
+          show: false                // Hide the routing panel
+        })
+        .on('routesfound', function(e) {
+          // When route is found, display distance & travel time
+          const route = e.routes[0];
+          const distanceMeters = route.summary.totalDistance;
+          const distanceKm = (distanceMeters / 1000).toFixed(2);
+
+          const timeSeconds = route.summary.totalTime;
+          const timeString = formatTravelTime(timeSeconds);
+
+          const info = `<strong>Distance:</strong> ${distanceKm} km, <strong>Time:</strong> ${timeString}`;
+          distanceDisplayDesktop.innerHTML = info;
+          distanceDisplayMobile.innerHTML = info;
+        })
+        .addTo(map);
+      } else {
+        // Update existing waypoints (no flicker)
+        routingControl.getPlan().setWaypoints([
+          L.latLng(busLatLng.lat, busLatLng.lng),
+          L.latLng(userLatLng.lat, userLatLng.lng)
+        ]);
+      }
+    }
+
+    // ------------------------------
+    // 5. Fetching Bus Device Data
+    // ------------------------------
     async function fetchDeviceData() {
       try {
         const response = await fetch(`/gps/data/${deviceId}`);
@@ -350,40 +498,69 @@
           syncLatestData('No data yet');
           return;
         }
-        // Format the timestamp into a more readable form
+        // Format timestamp and other details for display
         const formattedTime = new Date(data.timestamp).toLocaleString();
-        const html = `<br><strong>Time:</strong> ${formattedTime} 
-                      <br><strong>Speed:</strong> ${data.speed !== null ? data.speed + " km/h" : "N/A"} 
-                      <br><strong>Satellite:</strong> ${data.satellite !== null ? data.satellite : "N/A"}`;
+        const html = `
+          <br><strong>Time:</strong> ${formattedTime}
+          <br><strong>Speed:</strong> ${
+            data.speed !== null ? data.speed + ' km/h' : 'N/A'
+          }
+          <br><strong>Satellite:</strong> ${
+            data.satellite !== null ? data.satellite : 'N/A'
+          }
+        `;
         syncLatestData(html);
-        updateMap(data.lat, data.lng);
-        syncStatus('Updated');
+        updateBusMarker(data.lat, data.lng);
+        syncStatus('Locations updated');
       } catch (error) {
         syncStatus(`Error: ${error.message}`, true);
       }
     }
 
-    // Start monitoring the selected bus
-    function startMonitoring() {
+    // ------------------------------
+    // 6. Continuous User & Bus Updates
+    // ------------------------------
+    function getUserLocation() {
+      if (!navigator.geolocation) {
+        syncStatus('Geolocation is not supported by your browser.', true);
+        return;
+      }
+      if (userWatchId !== null) return; // Already watching
+
+      userWatchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          updateUserMarker(latitude, longitude);
+          syncStatus('Locations updated');
+        },
+        (error) => {
+          syncStatus(`Error getting location: ${error.message}`, true);
+        },
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
+      );
+    }
+
+    // ------------------------------
+    // 7. "Search" to start everything
+    // ------------------------------
+    function searchLocations() {
       if (!deviceId) {
         syncStatus('Please select a bus', true);
         return;
       }
-      stopMonitoring();
-      fetchDeviceData();
-      monitoringInterval = setInterval(fetchDeviceData, 2000);
-      syncStopButton(false);
-      syncStatus(`Monitoring bus ${deviceId}`);
-    }
+      // Optionally re-enable auto-fit on new search
+      autoFitEnabled = true;
 
-    // Stop the monitoring interval
-    function stopMonitoring() {
-      if (monitoringInterval) {
-        clearInterval(monitoringInterval);
-        monitoringInterval = null;
-        syncStopButton(true);
-        syncStatus('Monitoring stopped');
+      // Start watching user location
+      getUserLocation();
+      // Fetch initial bus data
+      fetchDeviceData();
+
+      // Poll for bus updates every 10 seconds
+      if (busUpdateInterval !== null) {
+        clearInterval(busUpdateInterval);
       }
+      busUpdateInterval = setInterval(fetchDeviceData, 10000);
     }
   </script>
 </body>
